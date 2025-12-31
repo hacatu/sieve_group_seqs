@@ -1,0 +1,38 @@
+cargo-features = ["profile-rustflags"]
+
+[package]
+name = "sieve_group_seqs"
+version = "0.1.0"
+edition = "2024"
+authors = ["hacatu"]
+description = "Find sequences of consecutive group numbers starting at 1"
+repository = "https://github.com/hacatu/sieve_group_seq"
+license = "MPL-2.0"
+keywords = ["number-theory", "math"]
+categories = ["mathematics"]
+
+[profile.release-trapv]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+overflow-checks = true
+strip = "symbols"
+rustflags = ["-Ctarget-cpu=native", "-Zthreads=8"]
+
+[profile.release-lto]
+inherits = "release"
+opt-level = 3
+lto = "fat"
+strip = "symbols"
+rustflags = ["-Ctarget-cpu=native", "-Zthreads=8"]
+
+[dependencies]
+flint-sys = "0.7.3"
+itertools = "0.12.1"
+num-integer = "0.1.46"
+primesieve_wrapper = "0.1.0"
+serde_json = "1.0.145"
+cache-size = "0.7.0"
+libc = "0.2"
+ureq = "3.1.4"
+
