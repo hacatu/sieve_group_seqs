@@ -4,6 +4,8 @@ Motivated by "[Does the sequence 1,2,3,4,5,6 appear in the number of groups of o
 
 This program finds numbers `n` where `gnu(n+1)=1, ..., gnu(n+7)=7` (sequence length 7), or similar sequences with length 6.
 
+`gnu(n)` is the number of groups of order (size) `n`, up to isomorphism.
+
 The `n` values where a sequence of length 7 exist are a (quite sparse) subset of those where a sequence of length 6 appears,
 which are a subset of those where a sequence of length 5 appears, etc.
 
@@ -62,4 +64,8 @@ For 6+, `n = 144m + 72` so we have `144m + 73` sqfree, `72m + 37, 36m + 19, 24m 
 For 4+, `n = 48m + 24` so we have `48m + 25` sqfree, `24m + 13, 12m + 7` both prime.
 
 For 2+, `n = 4m` so we have `4m + 1` sqfree, `2m + 1` prime.
+
+Also, we can't use a standard wheel optimization like `m mod 6` because we've already incorporated the maximal restrictions mod powers of 2 and 3,
+but we could do an `m mod 5`, `m mod 35`, or `m mod 385` wheel optimization.  Conveniently, `35` and `385` lead to `8` and `64` coprime residues
+respectively.  In theory this could skip 60%-75% of the `m` values, but it would make the code significantly more complicated.
 

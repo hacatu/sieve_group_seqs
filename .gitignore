@@ -2,4 +2,5 @@ target/*
 .vscode/*
 *.log
 rustc-ice-*.txt
+result-*-*-*.json
 
