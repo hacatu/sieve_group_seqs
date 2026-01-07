@@ -28,10 +28,10 @@ cargo b --profile release-trapv
 ## Running
 
 ```
-target/release-trapv/sieve_group_seq <6 or 7> <n_min> <n_max> <number of times to print a progress update, eg 90/100>
+target/release-trapv/sieve_group_seq <sequence length> <n_min> <n_max> <number of times to print a progress update, eg 90/100>
 ```
 
-Outputs to `result-<6 or 7>-<n_min>-<n_max>.json`.  No attempt is made to check if the file already exists or some overlapping file exists.
+Outputs to `result-<sequence length>-<n_min>-<n_max>.json`.  No attempt is made to check if the file already exists or some overlapping file exists.
 
 The program will automatically use all CPU cores + hyperthreading.
 
@@ -54,16 +54,43 @@ The second paper is pretty ... bad, but the others are good.  The code has expla
 
 It is also worth studying holder's formula, which is presented in Mahmoud 2024 and Conway 2008 [Counting groups: gnus, moas and other exotica](https://www.math.auckland.ac.nz/~obrien/research/gnu.pdf).
 
+## Testing
+
+Some tests are included in `src/main.rs`.
+To run all tests, do `cargo test`.
+To run all tests and generate a coverage report, install `cargo-llvm-cov` and run it:
+```
+cargo install cargo-llvm-cov
+cargo llvm-cov --all-features --html --open
+```
+DON'T do this unless you want to verify that the tests actually test all the code.
+`cargo-llvm-cov` has over 500 dependencies.
+But it doesn't actually take too long to install and run the tests.
+
+It will prompt you to install more packages when you run it.
+
+All the `is_gnu_k` functions match all terms in oeis, and for all but `k=7` this ensures full branch coverage.
+
+For `k=7`, I found that case IX from Mahmoud's paper wasn't covered, so I constructed a small example for that case and checked it actually has 7 groups using gap.
+
+See `tests::check_7_case_9` in `main.rs` for more info.
+
 ## Future Directions
 
-Currently, only sequences of length 6 and 7 are supported, because for shorter sequences we can't apply the last filtering rule in the sieve,
-so I have to make a couple simpler sieves for 2 and 3, and 4 and 5.
+Currently, only sequences of length 2+ are supported (but sequences of length 8+ don't exist, so the program just immediately returns an empty list).
+Three different but very similar sieves are used for 2/3, 4/5, and 6/7.
+There are 1, 2, and 3 bad residues respectively mod each prime > 3, and that's the only real difference.
 
-For 6+, `n = 144m + 72` so we have `144m + 73` sqfree, `72m + 37, 36m + 19, 24m + 13` all prime.
+We could also find "sequences" of length 1, which just correspond to `n` where `n+1` has `1` group.
+This is just [A003277](https://oeis.org/A003277), so there isn't really a need to support this case.
+If we wanted to, we could make a sieve to totally handle this case:
 
-For 4+, `n = 48m + 24` so we have `48m + 25` sqfree, `24m + 13, 12m + 7` both prime.
-
-For 2+, `n = 4m` so we have `4m + 1` sqfree, `2m + 1` prime.
+1. Initialize `slot[n] = {g = 1, r = n}` for every odd `n` in the range (the only even `n` with `gnu(n) = 1` is `2`)
+2. For every sieving prime `p`, for every multiple `m`:
+3. If `m` is divisible by `p^2`, set `slots[m].g = 0`, marking the slot as invalid.
+4. Otherwise, multiply `slots[m].g` by `p - 1` and divide `slots[m].r` by `p`.
+5. At the end, for every odd `n` in the range, if `slots[n].g != 0` and `slots[n].r != 1`, then `slots[n].r` is the unique large prime factor of `n`, so multiply `slots[n].g` by `slots[n].r - 1`.
+6. Now `slots[n].g` holds `phi(n)` for all squarefree `n` and `0` for squareful `n`, so `gnu(n) = 1` iff `slots[n].g != 0` and `gcd(slots[n].g, n) == 1`.
 
 Also, we can't use a standard wheel optimization like `m mod 6` because we've already incorporated the maximal restrictions mod powers of 2 and 3,
 but we could do an `m mod 5`, `m mod 35`, or `m mod 385` wheel optimization.  Conveniently, `35` and `385` lead to `8` and `64` coprime residues

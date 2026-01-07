@@ -280,8 +280,20 @@ mod tests {
 	}
 
 	#[test]
+	fn check_7_case_9() {
+		// Cases I-VIII are checked by the oeis data, but the smallest example for case IX is larger than the max listed for that sequence,
+		// so I constructed an example (not necessarily the smallest):
+		// recall IX: n = p^2qrs where (p + 1) is a multiple of q, (p + 1) is a multiple of r, and (s - 1) is a multiple of p but not p^2
+		// so pick q = 3, r = 5, p = 29, s = 29, check it meets these constraints, and compute n = 744285.
+		// Then I double checked this in gap using the cubefree package https://github.com/gap-packages/cubefree
+		// On arch linux, this is part of the `gap-packages` package, so install it, run gap, and run `LoadPackage("cubefree");NumberCFGroups(744285);`
+		// Obviously this would not help for non-cubefree n
+		assert!(is_gnu_7(744285));
+	}
+
+	#[test]
 	fn spot_check() {
-		for n in [5973822114120,6305771634120,28058687347320,48414128744520,74556478687320,84300170172120,142366076070120,153432090884520,207916418382120] {
+		for n in [5973822114120,6305771634120,28058687347320,48414128744520,74556478687320,84300170172120,142366076070120,153432090884520,207916418382120,339858901929960,375278016786120,415728077892120,426239950426920] {
 			assert!(FILTERS.iter().enumerate().all(|(i, f)|f(n+i as u64+1)));
 		}
 	}
