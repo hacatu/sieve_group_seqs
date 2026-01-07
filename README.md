@@ -12,6 +12,8 @@ which are a subset of those where a sequence of length 5 appears, etc.
 Sequences of length 8 don't exist, because we can show `n = 144m + 72` for some `m` for 6+ length sequences,
 but then `n + 8` is a multiple of 16 and has more than 8 groups.
 
+I used this program plus an earlier variant to find > 27k terms of [length 6 sequences](https://oeis.org/A392129) (only 8 were known) and all 13+ known terms of [length 7 sequences](https://oeis.org/A392130).
+
 ## Building
 
 Requirements: Rust and Git
